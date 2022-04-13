@@ -80,8 +80,8 @@ if __name__ == '__main__':
   memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation
   for Memory Management and PYTORCH_CUDA_ALLOC_CONF.  
   """
-  train(vgg16, criterion, optimizer, trainloader)
+  val(vgg16, criterion, testloader)
 
-  
+
 
 
