@@ -3,49 +3,10 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 import torchvision.models as models
-import torchinfo
 import torch.optim as optim
 import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
-
-
-def train(model, loss_fn, optimizer, dataloader, epoch_num=100, device='cuda:0'):
-  model.train()
-  for epoch in range(epoch_num):  # loop over the dataset multiple times
-    print(f'epoch = {epoch}')
-    for data in tqdm(dataloader, total=len(dataloader), leave=True, position=0):
-        # get the inputs; data is a list of [inputs, labels]
-        inputs, labels = data
-        inputs = inputs.to(device)
-        labels = labels.to(device)
-
-        # zero the parameter gradients
-        optimizer.zero_grad()
-
-        # forward + backward + optimize
-        outputs = model(inputs)
-        loss = loss_fn(outputs, labels)
-        loss.backward()
-        optimizer.step()
-
-  print('Finished Training')
-
-
-def val(model, loss_fn, dataloader, device='cuda:0'):
-  model.eval()
-  acc_loss = 0.0
-  for _, data in tqdm(enumerate(dataloader), total=len(dataloader), leave=True, position=0):
-    inputs, labels = data
-    inputs = inputs.to(device)
-    labels = labels.to(device)
-
-    outputs = model(inputs)
-    loss = loss_fn(outputs, labels)
-    acc_loss += loss
-
-  print(acc_loss)
-  return acc_loss
 
 
 if __name__ == '__main__':
@@ -80,7 +41,27 @@ if __name__ == '__main__':
   memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation
   for Memory Management and PYTORCH_CUDA_ALLOC_CONF.  
   """
-  val(vgg16, criterion, testloader)
+  "val"
+
+  running_loss = 0.0
+  for i, data in tqdm(enumerate(testloader, 0), total=len(testloader), leave=True, position=0):
+      # get the inputs; data is a list of [inputs, labels]
+      inputs, labels = data
+
+      # zero the parameter gradients
+
+      # forward + backward + optimize
+      outputs = vgg16(inputs.to(device))
+      loss = criterion(outputs, labels.to(device))
+
+      # print statistics
+      running_loss += loss.item()
+
+  print()
+  print(f'loss: {running_loss / 2000:.3f}')
+
+  print('Finished Validation')
+
 
 
 
